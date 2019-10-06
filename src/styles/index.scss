@@ -1,0 +1,12 @@
+@import "iconfont.scss";
+body {
+  color: $blue;
+}
+img {
+  width: 100px;
+}
+.bg {
+  width: 100px;
+  height: 100px;
+  background: url(../images/cube.jpg) no-repeat center/100% 100%;
+}
