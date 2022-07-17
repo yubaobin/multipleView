@@ -9,7 +9,6 @@ const getEntry = () => {
     let n = name.slice(start,end)
     n = n.split('/')[1]
     eArr.push(name)
-    eArr.push('babel-polyfill')
     entry[n] = eArr
   })
   return entry

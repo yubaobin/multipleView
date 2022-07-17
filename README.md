@@ -1,4 +1,4 @@
-# 使用webpack4配置多页面
+# 使用webpack5配置多页面
 ## 1. 安装node和npm
 ## 2. 新增package.json
 ```
@@ -11,7 +11,7 @@ npm init
 
 ## 4. 安装webpack
 ```
-// webpack4 需要webpack-cli的包
+// webpack5 需要webpack-cli的包
 npm install webpack webpack-cli --save-dev
 ```
 
