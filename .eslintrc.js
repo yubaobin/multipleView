@@ -217,7 +217,7 @@ module.exports = {
         yoda: ['error', 'never']
     },
     parserOptions: {
-        parser: 'babel-eslint',
+        parser: '@babel/eslint-parser',
         ecmaVersion: 2018,
         sourceType: 'module',
         ecmaFeatures: {

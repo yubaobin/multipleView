@@ -5,9 +5,7 @@ const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const webpackConfigBase = require('./webpack.base.conf')
 const config = require('./env-conf').prod
-function resolve (dir) {
-    return path.join(__dirname, '', dir)
-}
+
 const webpackConfigDev = {
     mode: 'production',
     output: {
@@ -38,7 +36,7 @@ const webpackConfigDev = {
         new webpack.DefinePlugin({
             'process.env.BASE_URL': '"' + process.env.BASE_URL + '"'
         }),
-        //压缩css
+        // 压缩css
         new OptimizeCSSPlugin({
             cssProcessorOptions: {
                 safe: true

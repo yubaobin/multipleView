@@ -24,7 +24,10 @@ module.exports = {
             styles: path.resolve(__dirname, 'src/styles')
         },
         extensions: ['.mjs', '.js', '.jsx', '.json', '.wasm'],
-        modules: ['node_modules']
+        modules: ['node_modules'],
+        fallback: {
+            url: false
+        }
     },
     plugins: [
         new webpack.ProgressPlugin(),
