@@ -39,20 +39,33 @@ module.exports = {
 }
 ```
 ## 6. 工具类 (后面给)
-## 7. transfer-webpack-plugin 复制静态文件
+## 7. copy-webpack-plugin 复制静态文件
 直接复制源文件
 ```
-npm install transfer-webpack-plugin --save-dev
+npm install copy-webpack-plugin --save-dev
 ```
 > webpack.base.conf.js
 
 ```
-const TransferWebpackPlugin = require('transfer-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 ...
 module.exports = {
     ...,
     plugins: [
-        new TransferWebpackPlugin([{ from: 'static', to: 'static' }], path.resolve(__dirname, 'src'))
+        new CopyWebpackPlugin({
+            patterns: [
+                {
+                    from: path.resolve(__dirname, './public'),
+                    to: devMode
+                        ? path.resolve(__dirname, 'dist')
+                        : path.resolve(__dirname, config.outputPath),
+                    toType: 'dir',
+                    globOptions: {
+                        ignore: ['.DS_Store', 'index.html']
+                    }
+                }
+            ]
+        })
     ]
     ...
 }
@@ -88,22 +101,23 @@ htmlArray.forEach((element) => {
 
 > @babel/core 核心代码
 > @babel/preset-env babel需要转换的版本
+> @babel/plugin-transform-runtime 提供新api全局方法
 
 ```
-npm install @babel/core @babel/preset-env babel-loader --save-dev
+npm install @babel/core @babel/preset-env babel-loader @babel/plugin-transform-runtime --save-dev
 ```
 > babel 默认只转换新的JavaScript句法，而不转换新的API
-> 需要babel-polyfill提供新api全局方法
+> 需要使用@babel/core-js3提供新api全局方法
 > 在入口js文件中引入（在webpack.utils.js中入口文件方法）
-
-```
-npm install babel-polyfill --save
-```
 
 > webpack.base.conf.js
 
 ```
-let babelPlugins = []
+let babelPlugins = [
+    ['@babel/plugin-transform-runtime', {
+        corejs: 3
+    }]
+]
 module.exports = {
     module: {
         rules: [
@@ -115,9 +129,7 @@ module.exports = {
                 loader: 'babel-loader',
                 options: {
                     presets: [
-                        ["@babel/preset-env", {
-                            useBuiltIns: 'entry'
-                        }]
+                        ['@babel/preset-env']
                     ],
                     plugins: babelPlugins
                 }
@@ -394,7 +406,7 @@ const webpackConfigDev = {
 module.exports = merge(webpackConfigBase, webpackConfigDev)
 ```
 
-## 16. 配置开发服务器
+## 16. 配置开发服务器(webpack-dev-server v4)
 > 使用 webpack-dev-server
 ```
 npm install webpack-dev-server --save-dev
@@ -405,20 +417,23 @@ npm install webpack-dev-server --save-dev
 
 ```
 const path = require('path')
-const webpackServer = require('webpack-dev-server')
+const WebpackServer = require('webpack-dev-server')
 const webpack = require('webpack')
 const devConfig = require('./webpack.dev.conf')
 const portfinder = require('portfinder')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const config = require('./env-conf').dev
 const options = {
-  contentBase: path.resolve(__dirname, 'dist'),
-  publicPath: config.publicPath || '/',
-  hot: true,
-  compress: true,
-  host: config.host,
-  quiet: true,
-  open: true
+   devMiddleware: {
+        publicPath: config.publicPath || '/'
+    },
+    static: {
+        directory: path.resolve(__dirname, 'dist'),
+        watch: true
+    },
+    watchFiles: ['src/*'],
+    host: config.host,
+    open: true
 }
 portfinder.basePort = config.port || 5000
 portfinder.getPort((err, port) => {
@@ -432,8 +447,8 @@ portfinder.getPort((err, port) => {
       }
     }))
     const compiler = webpack(devConfig)
-    const server = new webpackServer(compiler, options)
-    server.listen(port)
+    const server = new WebpackServer(options, compiler)
+    server.start(port)
   }
 })
 ```
